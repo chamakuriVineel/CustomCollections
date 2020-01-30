@@ -8,6 +8,7 @@ namespace CustomCollections
 {
     public class CustomList
     {
+        private bool isHomogeneous = true;
         public int length;
         public int capacity;
         private LinkedList head;
@@ -36,13 +37,13 @@ namespace CustomCollections
         }
         public Object get(int index)
         {
-            if (index < 0 || index >head.length)
+            if (index < 0 || index >=head.length)
                 throw new IndexOutOfRangeException();
             return head.get(index);
         }
         public bool set(int index, Object data)
         {
-            if (index < 0 || index > head.length)
+            if (index < 0 || index >= head.length)
                 throw new IndexOutOfRangeException();
             return head.set(index,data);
         }
@@ -63,7 +64,26 @@ namespace CustomCollections
             GC.Collect();
             return true;
         }
-        public  bool Equals(object first,object second)
+        public bool sort()
+        {
+            if (!isHomogeneous)
+                throw new Exception("List is non homogenious in nature, cannot sort");
+
+        }
+        //merge sort implementation of linkedlist
+        private LinkedList mergeSort(LinkedList head)
+        {
+            
+        }
+        private LinkedList mergeList(LinkedList firstList, LinkedList secondList)
+        {
+            
+        }
+        private LinkedList middlePointOfList(LinkedList head)
+        {
+            
+        }
+        public  static bool Equals(object first,object second)
         {
             if (first==second)
                 return true;
@@ -114,9 +134,10 @@ namespace CustomCollections
             }
             else
             {
-                LinkedList tempIterator = null;
+                LinkedList tempIterator = iterator;
+                iterator = iterator.next;
                 int hops = 0;
-                while (!(hops == index))
+                while (hops != index)
                 {
                     tempIterator = iterator;
                     iterator = iterator.next;
@@ -129,14 +150,12 @@ namespace CustomCollections
                 return this;
             }
         }
-
-        //changes required.
         public bool contains(Object data)
         {
             iterator = this;
-            while (iterator.next != null)
+            while (iterator!= null)
             {
-                if (iterator.data.Equals(data))
+                if (CustomList.Equals(iterator.data, data))
                     return true;
                 iterator = iterator.next;
             }
@@ -147,7 +166,9 @@ namespace CustomCollections
         {
             iterator = this;
             int hops = 0;
-            while (!(hops == index))
+            if (index == 0)
+                return iterator.next.data;
+            while (hops != index+1)
             {
                 iterator = iterator.next;
                 hops++;
@@ -158,7 +179,12 @@ namespace CustomCollections
         {
             iterator = this;
             int hops = 0;
-            while (!(hops == index))
+            if (index == 0)
+            {
+                iterator.next.data = data;
+                return true;
+            }
+            while (hops != index+1)
             {
                 iterator = iterator.next;
                 hops++;
@@ -169,7 +195,7 @@ namespace CustomCollections
         public override String ToString()
         {
             String answer = "";
-            iterator = this;
+            iterator = this.next;
             while (iterator != null)
             {
                 answer += "->" + iterator.data.ToString();
