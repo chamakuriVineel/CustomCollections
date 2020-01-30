@@ -63,7 +63,20 @@ namespace CustomCollections
             GC.Collect();
             return true;
         }
-        
+        public  bool Equals(object first,object second)
+        {
+            if (first==second)
+                return true;
+            else if (first == null||second==null)
+                return false;
+            else if (!Object.ReferenceEquals(first.GetType(), second.GetType()))
+                return false;
+            Type type = first.GetType();
+            var firstArgument = Convert.ChangeType(first,type);
+            var secondArgument = Convert.ChangeType(second, type);
+            return firstArgument.Equals(secondArgument);
+        }
+
     }
     public class LinkedList
     {
@@ -117,6 +130,7 @@ namespace CustomCollections
             }
         }
 
+        //changes required.
         public bool contains(Object data)
         {
             iterator = this;
