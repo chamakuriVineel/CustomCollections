@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 
 
+
 namespace CustomCollections
 {
     public class CustomList
     {
-        private bool isHomogeneous = true;
         public int length;
         public int capacity;
         private LinkedList head;
@@ -24,6 +24,16 @@ namespace CustomCollections
             head = head.add(data, head.length);
             this.length = head.length;
             return true;
+        }
+        public bool removeLast()
+        {
+            head.remove(head.length-1);
+            return true;
+        }
+        public bool remove(int index)
+        {
+            head = head.remove(index);
+            return true;   
         }
         public bool add(object data, int index)
         {
@@ -47,6 +57,12 @@ namespace CustomCollections
                 throw new IndexOutOfRangeException();
             return head.set(index,data);
         }
+        public bool sort()
+        {
+            LinkedList virtualHead = head.next;
+            head.next = customUtils.mergeSort(virtualHead);
+            return true;
+        }
         public String ToString()
         {
             return head.ToString();
@@ -57,6 +73,10 @@ namespace CustomCollections
                 return false;
             return head.contains(data);
         }
+        public int indexOf(Object data)
+        {
+            return head.indexOf(data);
+        }
         public bool clear()
         {
             head = new LinkedList(new object());
@@ -64,43 +84,10 @@ namespace CustomCollections
             GC.Collect();
             return true;
         }
-        public bool sort()
-        {
-            if (!isHomogeneous)
-                throw new Exception("List is non homogenious in nature, cannot sort");
-
-        }
-        //merge sort implementation of linkedlist
-        private LinkedList mergeSort(LinkedList head)
-        {
-            
-        }
-        private LinkedList mergeList(LinkedList firstList, LinkedList secondList)
-        {
-            
-        }
-        private LinkedList middlePointOfList(LinkedList head)
-        {
-            
-        }
-        public  static bool Equals(object first,object second)
-        {
-            if (first==second)
-                return true;
-            else if (first == null||second==null)
-                return false;
-            else if (!Object.ReferenceEquals(first.GetType(), second.GetType()))
-                return false;
-            Type type = first.GetType();
-            var firstArgument = Convert.ChangeType(first,type);
-            var secondArgument = Convert.ChangeType(second, type);
-            return firstArgument.Equals(secondArgument);
-        }
-
     }
-    public class LinkedList
+    public class LinkedList:IComparable<LinkedList>
     {
-        public object data;
+        public Object data;
         public LinkedList next;
         private LinkedList iterator;
         public int length;
@@ -150,18 +137,49 @@ namespace CustomCollections
                 return this;
             }
         }
+        public LinkedList remove(int index)
+        {
+            if (index < 0 || index >= length)
+                throw new IndexOutOfRangeException();
+            int hops = 0;
+            iterator = this;
+            if (index == 0)
+            {
+                this.next = this.next.next;
+                return this;
+            }
+            while (hops != index)
+            {
+                iterator = iterator.next;
+                hops++;
+            }
+            iterator.next = iterator.next.next;
+            return this;
+        }
+        public int indexOf(Object data)
+        {
+            int index = -1;
+            iterator = this;
+            while (iterator != null)
+            {
+                if (CustomList.Equals(iterator.data, data))
+                    return index;
+                iterator = iterator.next;
+                index++;
+            }
+            return -1;
+        }
         public bool contains(Object data)
         {
             iterator = this;
-            while (iterator!= null)
+            while (iterator != null)
             {
-                if (CustomList.Equals(iterator.data, data))
+                if (customUtils.Equals(iterator.data, data))
                     return true;
                 iterator = iterator.next;
             }
             return false;
         }
-
         public Object get(int index)
         {
             iterator = this;
@@ -201,9 +219,23 @@ namespace CustomCollections
                 answer += "->" + iterator.data.ToString();
                 iterator = iterator.next;
             }
+            iterator = null;
             return answer;
         }
-
+        public int CompareTo(LinkedList obj)
+        {
+            if (obj == null)
+                return 1;
+            Type thisType = this.data.GetType();
+            Type argumentType = obj.data.GetType();
+            dynamic thisObject = Convert.ChangeType(this.data,thisType);
+            dynamic argumentObject = Convert.ChangeType(obj.data,argumentType);
+            if (!thisType.Equals(argumentType))
+            {
+                throw new Exception("customList contains multiple data types, It can't be sorted");
+            }
+            return thisObject.CompareTo(argumentObject);
+        }
     }
     
 }
